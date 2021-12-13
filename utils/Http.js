@@ -7,9 +7,8 @@ export default function Http() {
    })
 
    http.interceptors.request.use(function (config) {
-      const token = JSON.parse(localStorage.getItem('recoil-persist'))[
-         'plip.userToken'
-      ]
+      const getToken = localStorage.getItem('recoil-persist') ?? ''
+      const token = getToken ? JSON.parse(getToken)['plip.userToken'] : ''
 
       config.headers.Authorization = token ? `Bearer ${token}` : ''
       return config
@@ -20,7 +19,7 @@ export default function Http() {
       (error) => {
          if (error.response) {
             if (error.response.status === 401) {
-                window.location.assign('/login')
+               window.location.assign('/login')
             }
          }
          console.log(error)
