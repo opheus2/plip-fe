@@ -7,7 +7,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { userState, userTokenState } from '../libs/userState'
 import AvatarComponent from './AvatarComponent'
 import { isEmptyObj } from '../utils/helper'
-import Http from '../Utils/Http'
+import Http from '../utils/Http'
 import { useRouter } from 'next/router'
 
 function classNames(...classes) {

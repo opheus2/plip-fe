@@ -7,7 +7,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil'
 import Link from '../../../components/Link'
 import { emailState, emailVerifiedState } from '../../../libs/authState'
 import { userState, userTokenState } from '../../../libs/userState'
-import Http from '../../../Utils/Http'
+import Http from '../../../utils/Http'
 
 function complete() {
    const router = useRouter()

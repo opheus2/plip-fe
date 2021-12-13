@@ -6,7 +6,7 @@ import { userState, userTokenState } from '../../libs/userState'
 import { userWallets, activeWallets } from '../../libs/walletState'
 import { useRouter } from 'next/router'
 import { isEmptyObj } from '../../utils/helper'
-import Http from '../../Utils/Http'
+import Http from '../../utils/Http'
 import { ClipLoader } from 'react-spinners'
 import Wallets from '../../components/Wallets'
 
