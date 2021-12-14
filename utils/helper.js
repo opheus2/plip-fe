@@ -42,6 +42,15 @@ export const getUri = (href = '') => {
    if (href) {
       return href.split('/').pop()
    }
-   
+
    return window.location.href.split('/').pop()
+}
+
+export const classNames = (...classes) => {
+   return classes.filter(Boolean).join(' ')
+}
+
+export const formatDate = (dateString) => {
+   const options = { year: 'numeric', month: 'long', day: 'numeric' }
+   return new Date(dateString).toLocaleDateString(undefined, options)
 }

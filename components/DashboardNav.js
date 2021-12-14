@@ -1,25 +1,27 @@
-import { Fragment, useEffect, useMemo, useRef } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { SearchIcon } from '@heroicons/react/solid'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
-import { navigation, userNavigation } from '../libs/appMenu'
+import { activeMenuState, navigation, userNavigation } from '../libs/appMenu'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { userState, userTokenState } from '../libs/userState'
 import AvatarComponent from './AvatarComponent'
-import { isEmptyObj } from '../utils/helper'
+import { classNames, getUri, isEmptyObj } from '../utils/helper'
 import Http from '../utils/Http'
 import { useRouter } from 'next/router'
-
-function classNames(...classes) {
-   return classes.filter(Boolean).join(' ')
-}
+import Link from './Link'
 
 function DashboardNav() {
    const router = useRouter()
    const [user, setUser] = useRecoilState(userState)
    const [token, setToken] = useRecoilState(userTokenState)
 
-   const handleLogout = async () => {
+   useEffect(() => {
+      // const
+   }, [])
+
+   const handleLogout = async (e) => {
+      e.preventDefault()
       await Http()
          .post('/auth/logout')
          .then(() => {
@@ -27,14 +29,15 @@ function DashboardNav() {
             setToken(null)
 
             router.replace('/login')
+            return
          })
    }
    return (
       !isEmptyObj(user) && (
-         <div className="bg-indigo-600 pb-32">
+         <div className="bg-indigo-600 pb-32 auth-bg">
             <Disclosure
                as="nav"
-               className="bg-indigo-600 border-b border-indigo-300 border-opacity-25 lg:border-none"
+               className="auth-bg border-b border-indigo-300 border-opacity-25 lg:border-none"
             >
                {({ open }) => (
                   <>
@@ -49,12 +52,12 @@ function DashboardNav() {
                               <div className="hidden lg:block lg:ml-10">
                                  <div className="flex space-x-4">
                                     {navigation.map((item) => (
-                                       <a
+                                       <Link
                                           key={item.name}
                                           href={item.href}
                                           className={classNames(
                                              item.current
-                                                ? 'bg-indigo-700 text-white'
+                                                ? 'bg-indigo-500 text-white'
                                                 : 'text-white hover:bg-indigo-500 hover:bg-opacity-75',
                                              'rounded-md py-2 px-3 text-sm font-medium'
                                           )}
@@ -63,7 +66,7 @@ function DashboardNav() {
                                           }
                                        >
                                           {item.name}
-                                       </a>
+                                       </Link>
                                     ))}
                                  </div>
                               </div>
@@ -151,7 +154,7 @@ function DashboardNav() {
                                           {userNavigation.map((item) => (
                                              <Menu.Item key={item.name}>
                                                 {({ active }) => (
-                                                   <a
+                                                   <Link
                                                       href={item.href}
                                                       className={classNames(
                                                          active
@@ -161,10 +164,27 @@ function DashboardNav() {
                                                       )}
                                                    >
                                                       {item.name}
-                                                   </a>
+                                                   </Link>
                                                 )}
                                              </Menu.Item>
                                           ))}
+                                          <Menu.Item key="logout_desktop">
+                                             {({ active }) => (
+                                                <Link
+                                                    key="logout"
+                                                   href="#"
+                                                   onClick={handleLogout}
+                                                   className={classNames(
+                                                      active
+                                                         ? 'bg-gray-100'
+                                                         : '',
+                                                      'block py-2 px-4 text-sm text-gray-700'
+                                                   )}
+                                                >
+                                                   Logout
+                                                </Link>
+                                             )}
+                                          </Menu.Item>
                                        </Menu.Items>
                                     </Transition>
                                  </Menu>
@@ -177,20 +197,23 @@ function DashboardNav() {
                         <div className="px-2 pt-2 pb-3 space-y-1">
                            {navigation.map((item) => (
                               <Disclosure.Button
-                                 key={item.name}
-                                 as="a"
-                                 href={item.href}
-                                 className={classNames(
-                                    item.current
-                                       ? 'bg-indigo-700 text-white'
-                                       : 'text-white hover:bg-indigo-500 hover:bg-opacity-75',
-                                    'block rounded-md py-2 px-3 text-base font-medium'
-                                 )}
+                                 as="button"
                                  aria-current={
                                     item.current ? 'page' : undefined
                                  }
                               >
-                                 {item.name}
+                                 <Link
+                                    key={item.name}
+                                    href={item.href}
+                                    className={classNames(
+                                       item.current
+                                          ? 'bg-indigo-700 text-white'
+                                          : 'text-white hover:bg-indigo-500 hover:bg-opacity-75',
+                                       'block rounded-md py-2 px-3 text-base font-medium'
+                                    )}
+                                 >
+                                    {item.name}
+                                 </Link>
                               </Disclosure.Button>
                            ))}
                         </div>
@@ -234,6 +257,15 @@ function DashboardNav() {
                                     {item.name}
                                  </Disclosure.Button>
                               ))}
+
+                              <Disclosure.Button
+                                 key="logout_mobile"
+                                 as="a"
+                                 onClick={handleLogout}
+                                 className="block rounded-md py-2 px-3 text-base font-medium text-white hover:bg-indigo-500 hover:bg-opacity-75"
+                              >
+                                 Logout
+                              </Disclosure.Button>
                            </div>
                         </div>
                      </Disclosure.Panel>
@@ -242,7 +274,13 @@ function DashboardNav() {
             </Disclosure>
             <header className="py-10">
                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <h1 className="text-3xl font-bold text-white">Overview</h1>
+                  <h1 className="text-3xl font-bold text-white">
+                     {navigation.map((n) => {
+                        if (n.current === true) {
+                           return n.name
+                        }
+                     })}
+                  </h1>
                </div>
             </header>
          </div>

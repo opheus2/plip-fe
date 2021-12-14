@@ -14,3 +14,14 @@ export const activeWallets = selector({
    get: ({ get }) => get(userWallets),
    set: ({ set }, wallets) => set(userWallets, wallets),
 })
+
+export const selectedWalletState = atom({
+   key: 'showSingleWallet',
+   default: null,
+   effects_UNSTABLE: [persistAtom],
+})
+
+export const walletTransactionState = atom({
+   key: 'walletTransactions',
+   default: [],
+})
