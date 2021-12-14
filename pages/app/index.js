@@ -9,6 +9,8 @@ import { isEmptyObj } from '../../utils/helper'
 import Http from '../../utils/Http'
 import { ClipLoader } from 'react-spinners'
 import Wallets from '../../components/Wallets'
+import { EchoClient } from '../../utils/EchoClient'
+import { navigation } from '../../libs/appMenu'
 
 export default function App() {
    const router = useRouter()
@@ -55,6 +57,30 @@ export default function App() {
 
       fetchWallets()
    }, [user])
+
+   useEffect(() => {
+      const echo = EchoClient(userToken)
+      echo
+         .channel('testChannel')
+         .listen(`WalletInformationUpdate`, (d) => console.log(d))
+      echo.private(`users.${user.id}`).notification(async (notification) => {
+         console.log(notification)
+         if (notification.type === 'WalletInformationUpdate') {
+            console.log(notification.data)
+         }
+      })
+
+      return () => {
+         echo.leave(`users.${user.id}`)
+      }
+   }, [user])
+   
+   navigation.map((n) => {
+      n.current = false
+      if (n.key == 'app') {
+         n.current = true
+      }
+   })
 
    return (
       <>

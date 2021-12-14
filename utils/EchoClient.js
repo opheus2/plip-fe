@@ -1,5 +1,5 @@
 import Echo from 'laravel-echo'
-import Http from '../Utils/Http'
+import Http from './Http'
 
 export function EchoClient(authToken) {
    const auth = {}
